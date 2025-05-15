@@ -55,6 +55,11 @@ class KreslingController {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        bottom: 20
+                    }
+                },
                 plugins: {
                     title: {
                         display: true,
