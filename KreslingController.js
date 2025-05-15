@@ -57,7 +57,7 @@ class KreslingController {
                 maintainAspectRatio: false,
                 layout: {
                     padding: {
-                        bottom: 20
+                        bottom: 50
                     }
                 },
                 plugins: {
