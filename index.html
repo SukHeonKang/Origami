@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conical Kresling Origami Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Conical Kresling Origami Simulator</h1>
+            <p>Based on the paper "Conical Kresling origami and its applications to curvature and energy programming" by Lu et al.</p>
+        </header>
+
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="simulator">Simulator</button>
+                <button class="tab-btn" data-tab="surface-approx">Surface Approximation</button>
+                <button class="tab-btn" data-tab="energy-programming">Energy Programming</button>
+                <button class="tab-btn" data-tab="about">About</button>
+            </div>
+
+            <div class="tab-content active" id="simulator">
+                <div class="simulator-container">
+                    <div class="visualization" id="visualization-container"></div>
+                    <div class="controls">
+                        <h2>Kresling Model Parameters</h2>
+                        <div class="parameter-group">
+                            <label for="n-slider">Number of unit cells (n):</label>
+                            <input type="range" id="n-slider" min="3" max="12" value="6" step="1">
+                            <span class="parameter-value" id="n-value">6</span>
+                        </div>
+                        <div class="parameter-group">
+                            <label for="a-slider">Top edge length (a):</label>
+                            <input type="range" id="a-slider" min="0.5" max="3.0" value="1.0" step="0.1">
+                            <span class="parameter-value" id="a-value">1.0</span>
+                        </div>
+                        <div class="parameter-group">
+                            <label for="b-slider">Bottom edge length (b):</label>
+                            <input type="range" id="b-slider" min="0.5" max="3.0" value="2.0" step="0.1">
+                            <span class="parameter-value" id="b-value">2.0</span>
+                        </div>
+                        <div class="parameter-group">
+                            <label for="c-slider">Side edge length (c):</label>
+                            <input type="range" id="c-slider" min="1.0" max="5.0" value="3.5" step="0.1">
+                            <span class="parameter-value" id="c-value">3.5</span>
+                        </div>
+                        <div class="parameter-group">
+                            <label for="beta-slider">Angle (β):</label>
+                            <input type="range" id="beta-slider" min="0.5" max="2.5" value="1.5" step="0.1">
+                            <span class="parameter-value" id="beta-value">1.5</span>
+                        </div>
+                        <div class="parameter-group">
+                            <label for="height-slider">Height:</label>
+                            <input type="range" id="height-slider" min="0" max="4" value="2.0" step="0.1">
+                            <span class="parameter-value" id="height-value">2.0</span>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button id="toggle-state-btn">Toggle State</button>
+                            <button id="reset-btn">Reset</button>
+                            <button id="animate-btn">Animate</button>
+                        </div>
+                        
+                        <div class="stable-states-info" id="stable-states-info">
+                            <h3>Stable State Information</h3>
+                            <div id="state-info-content"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="energy-landscape">
+                    <h2>Energy Landscape</h2>
+                    <canvas id="energy-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="tab-content" id="surface-approx">
+                <h2>Surface Approximation with CKO</h2>
+                <div class="surface-container">
+                    <div class="surface-visualization" id="surface-visualization"></div>
+                    <div class="surface-controls">
+                        <h3>Target Surface</h3>
+                        <select id="surface-select">
+                            <option value="hyperboloid">Hyperboloid</option>
+                            <option value="ellipsoid">Ellipsoid</option>
+                            <option value="sinusoid">Sinusoid</option>
+                            <option value="cone">Cone</option>
+                            <option value="custom">Custom Equation</option>
+                        </select>
+                        
+                        <div id="custom-equation-container" style="display: none;">
+                            <label for="custom-equation">Enter surface equation:</label>
+                            <input type="text" id="custom-equation" placeholder="e.g., (x^2 + y^2)/9 - 3*z^2/25 = 1">
+                        </div>
+                        
+                        <div class="parameter-group">
+                            <label for="layers-slider">Number of layers:</label>
+                            <input type="range" id="layers-slider" min="2" max="10" value="6" step="1">
+                            <span class="parameter-value" id="layers-value">6</span>
+                        </div>
+                        
+                        <div class="parameter-group">
+                            <label for="cells-slider">Cells per layer:</label>
+                            <input type="range" id="cells-slider" min="4" max="12" value="10" step="1">
+                            <span class="parameter-value" id="cells-value">10</span>
+                        </div>
+                        
+                        <button id="calculate-surface-btn">Calculate Approximation</button>
+                        <button id="toggle-model-btn">Toggle Model/Target</button>
+                        <button id="export-pattern-btn">Export Pattern</button>
+                        
+                        <div class="approximation-info" id="approximation-info"></div>
+                    </div>
+                </div>
+                
+                <div class="parameters-table-container">
+                    <h3>Layer Parameters</h3>
+                    <table id="layer-parameters-table" class="parameters-table">
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>a</th>
+                                <th>b</th>
+                                <th>c</th>
+                                <th>β</th>
+                                <th>h₁</th>
+                                <th>h₂</th>
+                            </tr>
+                        </thead>
+                        <tbody id="layer-parameters-body">
+                            <!-- Parameters will be filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-content" id="energy-programming">
+                <h2>Energy Programming with CKO</h2>
+                <div class="energy-programming-container">
+                    <div class="energy-visualization" id="energy-visualization"></div>
+                    <div class="energy-controls">
+                        <h3>Design Parameters</h3>
+                        
+                        <div class="parameter-group">
+                            <label for="energy-layers-slider">Number of layers:</label>
+                            <input type="range" id="energy-layers-slider" min="1" max="3" value="2" step="1">
+                            <span class="parameter-value" id="energy-layers-value">2</span>
+                        </div>
+                        
+                        <div class="parameter-group">
+                            <label for="energy-cells-slider">Cells per layer:</label>
+                            <input type="range" id="energy-cells-slider" min="4" max="12" value="6" step="1">
+                            <span class="parameter-value" id="energy-cells-value">6</span>
+                        </div>
+                        
+                        <div id="layer-target-parameters"></div>
+                        
+                        <button id="calculate-energy-btn">Calculate Design</button>
+                        <button id="animate-folding-btn">Animate Folding</button>
+                        <button id="export-energy-design-btn">Export Design</button>
+                        
+                        <div class="optimization-info" id="optimization-info"></div>
+                    </div>
+                </div>
+                
+                <div class="energy-landscape-multi">
+                    <h3>Energy Landscape</h3>
+                    <canvas id="energy-landscape-chart"></canvas>
+                </div>
+                
+                <div class="parameters-table-container">
+                    <h3>Optimized Parameters</h3>
+                    <table id="energy-parameters-table" class="parameters-table">
+                        <thead>
+                            <tr>
+                                <th>Layer</th>
+                                <th>b₁</th>
+                                <th>b₂</th>
+                                <th>c</th>
+                                <th>β</th>
+                                <th>h₁</th>
+                                <th>h₂</th>
+                                <th>Energy Barrier</th>
+                            </tr>
+                        </thead>
+                        <tbody id="energy-parameters-body">
+                            <!-- Parameters will be filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="tab-content" id="about">
+                <h2>About Conical Kresling Origami</h2>
+                <div class="about-content">
+                    <p>This simulator is based on the research paper "Conical Kresling origami and its applications to curvature and energy programming" by Lu Lu, Xiangxin Dang, Fan Feng, Pengyu Lv, and Huiling Duan, published in Proceedings of the Royal Society A in 2022.</p>
+                    
+                    <h3>Key Features of CKO</h3>
+                    <ul>
+                        <li><strong>Bistability:</strong> CKO exhibits bistable behavior, having two stable states with different heights and twist angles.</li>
+                        <li><strong>Curvature Programming:</strong> CKO tessellations can approximate various curved surfaces by tailoring the geometric parameters of each layer.</li>
+                        <li><strong>Energy Programming:</strong> The energy landscape of CKO can be programmed to achieve desired stable states and energy barriers.</li>
+                        <li><strong>Deployable Structures:</strong> CKO can be used to design deployable structures, shape-morphing devices, and multi-modal robots.</li>
+                    </ul>
+                    
+                    <h3>Mathematical Model</h3>
+                    <p>The CKO is modeled as a truss system where the elastic energy is mainly induced by the elongation or shortening of the creases. The stable states are derived analytically by solving the equilibrium equations.</p>
+                    
+                    <div class="equation-container">
+                        <img src="equations.png" alt="Key equations for CKO model" class="equations-image">
+                    </div>
+                    
+                    <h3>References</h3>
+                    <p>Lu, L., Dang, X., Feng, F., Lv, P., & Duan, H. (2022). Conical Kresling origami and its applications to curvature and energy programming. Proceedings of the Royal Society A, 477(20210712).</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Conical Kresling Origami Simulator | Created for research and educational purposes</p>
+        </footer>
+    </div>
+
+    <script src="KreslingModel.js"></script>
+    <script src="KreslingVisualizer.js"></script>
+    <script src="KreslingController.js"></script>
+    <script src="SurfaceApproximator.js"></script>
+    <script src="EnergyProgrammer.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
