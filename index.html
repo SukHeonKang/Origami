@@ -6,6 +6,7 @@
     <title>Conical Kresling Origami Simulator</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -22,7 +23,7 @@
                 <button class="tab-btn active" data-tab="simulator">Simulator</button>
                 <button class="tab-btn" data-tab="surface-approx">Surface Approximation</button>
                 <button class="tab-btn" data-tab="energy-programming">Energy Programming</button>
-                <button class="tab-btn" data-tab="about">About</button>
+                <!-- About 탭 버튼 제거됨 -->
             </div>
 
             <div class="tab-content active" id="simulator">
@@ -196,30 +197,7 @@
                 </div>
             </div>
 
-            <div class="tab-content" id="about">
-                <h2>About Conical Kresling Origami</h2>
-                <div class="about-content">
-                    <p>This simulator is based on the research paper "Conical Kresling origami and its applications to curvature and energy programming" by Lu Lu, Xiangxin Dang, Fan Feng, Pengyu Lv, and Huiling Duan, published in Proceedings of the Royal Society A in 2022.</p>
-                    
-                    <h3>Key Features of CKO</h3>
-                    <ul>
-                        <li><strong>Bistability:</strong> CKO exhibits bistable behavior, having two stable states with different heights and twist angles.</li>
-                        <li><strong>Curvature Programming:</strong> CKO tessellations can approximate various curved surfaces by tailoring the geometric parameters of each layer.</li>
-                        <li><strong>Energy Programming:</strong> The energy landscape of CKO can be programmed to achieve desired stable states and energy barriers.</li>
-                        <li><strong>Deployable Structures:</strong> CKO can be used to design deployable structures, shape-morphing devices, and multi-modal robots.</li>
-                    </ul>
-                    
-                    <h3>Mathematical Model</h3>
-                    <p>The CKO is modeled as a truss system where the elastic energy is mainly induced by the elongation or shortening of the creases. The stable states are derived analytically by solving the equilibrium equations.</p>
-                    
-                    <div class="equation-container">
-                        <img src="equations.png" alt="Key equations for CKO model" class="equations-image">
-                    </div>
-                    
-                    <h3>References</h3>
-                    <p>Lu, L., Dang, X., Feng, F., Lv, P., & Duan, H. (2022). Conical Kresling origami and its applications to curvature and energy programming. Proceedings of the Royal Society A, 477(20210712).</p>
-                </div>
-            </div>
+            <!-- About 탭 콘텐츠 제거됨 -->
         </div>
 
         <footer>
