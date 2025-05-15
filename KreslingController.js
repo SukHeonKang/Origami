@@ -86,6 +86,9 @@ class KreslingController {
                             display: true,
                             text: 'Energy'
                         }
+                        min: 0,
+                        max: 3,
+                        beginAtZero: true
                     }
                 }
             }
